@@ -1,4 +1,5 @@
 var calendario = null;
+var mensajesProcesados = [];
 
 function leerCorreosYCrearEventos() {
   var startDate = new Date("2024-01-01");
@@ -14,25 +15,29 @@ function leerCorreosYCrearEventos() {
     var mensajes = bandejaEntrada[i].getMessages();
     for (var j = 0; j < mensajes.length; j++) {
       var correo = mensajes[j];
-      var asunto = correo.getSubject();
-      var cuerpo = correo.getPlainBody();
+      var idMensaje = correo.getId();
+      if (mensajesProcesados.indexOf(idMensaje) === -1) {
+        var asunto = correo.getSubject();
+        var cuerpo = correo.getPlainBody();
 
-      Logger.log("Asunto del correo: " + asunto);
+        Logger.log("Asunto del correo: " + asunto);
 
-      if (asunto && asunto.toLowerCase().startsWith("prueba")) {
-        var titulo = extraerCampo(cuerpo, "Título del Evento:");
-        var fecha = extraerCampo(cuerpo, "Fecha:");
-        var hora = extraerCampo(cuerpo, "Hora:");
-        var lugar = extraerCampo(cuerpo, "Lugar:");
+        if (asunto && asunto.toLowerCase().startsWith("prueba")) {
+          var titulo = extraerCampo(cuerpo, "Título del Evento:");
+          var fecha = extraerCampo(cuerpo, "Fecha:");
+          var hora = extraerCampo(cuerpo, "Hora:");
+          var lugar = extraerCampo(cuerpo, "Lugar:");
 
-        Logger.log("Título del evento: " + titulo);
-        Logger.log("Fecha: " + fecha);
-        Logger.log("Hora: " + hora);
-        Logger.log("Lugar: " + lugar);
+          Logger.log("Título del evento: " + titulo);
+          Logger.log("Fecha: " + fecha);
+          Logger.log("Hora: " + hora);
+          Logger.log("Lugar: " + lugar);
 
-        if (titulo && fecha && hora && lugar) {
-          crearEventoGoogleCalendar(titulo, fecha, hora, lugar);
-          correosEncontrados++;
+          if (titulo && fecha && hora && lugar) {
+            crearEventoGoogleCalendar(titulo, fecha, hora, lugar);
+            correosEncontrados++;
+          }
+          mensajesProcesados.push(idMensaje);
         }
       }
     }
