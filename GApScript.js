@@ -1,11 +1,11 @@
 var calendario = null;
 var mensajesProcesados = [];
-
+var asuntoBuscar = "evento";
 function leerCorreosYCrearEventos() {
   var startDate = new Date("2024-01-01");
   var endDate = new Date("2024-12-12");
 
-  var bandejaEntrada = GmailApp.search('subject:^prueba after:' + formatDate(startDate) + ' before:' + formatDate(endDate));
+  var bandejaEntrada = GmailApp.search('subject:^' + asuntoBuscar + ' after:' + formatDate(startDate) + ' before:' + formatDate(endDate));
 
   var correosEncontrados = 0;
 
@@ -16,13 +16,14 @@ function leerCorreosYCrearEventos() {
     for (var j = 0; j < mensajes.length; j++) {
       var correo = mensajes[j];
       var idMensaje = correo.getId();
+
       if (mensajesProcesados.indexOf(idMensaje) === -1) {
         var asunto = correo.getSubject();
         var cuerpo = correo.getPlainBody();
 
         Logger.log("Asunto del correo: " + asunto);
 
-        if (asunto && asunto.toLowerCase().startsWith("prueba")) {
+        if (asunto && asunto.toLowerCase().startsWith(asuntoBuscar)) {
           var titulo = extraerCampo(cuerpo, "Título del Evento:");
           var fecha = extraerCampo(cuerpo, "Fecha:");
           var hora = extraerCampo(cuerpo, "Hora:");
@@ -44,9 +45,9 @@ function leerCorreosYCrearEventos() {
   }
 
   if (correosEncontrados > 0) {
-    Logger.log("Se encontraron " + correosEncontrados + " correo(s) con el asunto que comienza con 'prueba' y se crearon los eventos correspondientes.");
+    Logger.log("Se encontraron " + correosEncontrados + " correo(s) con el asunto que comienza con "+ asuntoBuscar + "y se crearon los eventos correspondientes.");
   } else {
-    Logger.log("No se encontraron correos con el asunto que comience con 'prueba'.");
+    Logger.log("No se encontraron correos con el asunto que comience con "+ asuntoBuscar + ".");
   }
 }
 
